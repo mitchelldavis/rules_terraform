@@ -1,33 +1,32 @@
 workspace(name = "io_bazel_rules_terraform")
 
-#load("@bazel_tools//tools/build_defs/repo:http.bzl", 
-#	 "http_archive", "http_file")
-## THIRD PARTY TOOLS
-###################################
-#http_archive(
-#	name = "terraform_linux",
-#	url = "https://releases.hashicorp.com/terraform/0.11.2/terraform_0.11.2_linux_amd64.zip",
-#	build_file_content = """
-#filegroup(
-#	name = "terraform_linux_tool",
-#	srcs = ["terraform"],
-#	visibility = ["//visibility:public"]
-#)
-#""", sha256 = "f728fa73ff2a4c4235a28de4019802531758c7c090b6ca4c024d48063ab8537b"
-#) 
-#http_archive(
-#	name = "terraform_darwin",
-#	url = "https://releases.hashicorp.com/terraform/0.11.2/terraform_0.11.2_darwin_amd64.zip",
-#	build_file_content = """
-#filegroup(
-#	name = "terraform_darwin_tool",
-#	srcs = ["terraform"],
-#	visibility = ["//visibility:public"]
-#)
-#""",
-#	sha256 = "ff5c3c4bcfe84e011b96a2232704b2db196383ce5d4a32e47956c883ddc94bac"
-#)
-
 load("//rules_terraform:terraform.bzl", "terraform_register_toolchains")
 
 terraform_register_toolchains()
+
+# For the pgp tool used to verify downloaded hashicorp tools.
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "io_bazel_rules_go",
+    urls = ["https://github.com/bazelbuild/rules_go/releases/download/0.16.5/rules_go-0.16.5.tar.gz"],
+    sha256 = "7be7dc01f1e0afdba6c8eb2b43d2fa01c743be1b9273ab1eaf6c233df078d705",
+)
+http_archive(
+    name = "bazel_gazelle",
+    urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/0.16.0/bazel-gazelle-0.16.0.tar.gz"],
+    sha256 = "7949fc6cc17b5b191103e97481cf8889217263acf52e00b560683413af204fcb",
+)
+load("@bazel_gazelle//:deps.bzl", "go_repository")
+
+go_repository(
+	name = "org_golang_x_crypto",
+	commit = "505ab145d0a99da450461ae2c1a9f6cd10d1f447",
+	importpath = "golang.org/x/crypto",
+)
+
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+go_rules_dependencies()
+go_register_toolchains()
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+gazelle_dependencies()
