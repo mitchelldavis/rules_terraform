@@ -1,5 +1,9 @@
 #toolchain_type(name = "toolchain_type")
 
+terraform_sums_url_template = "https://releases.hashicorp.com/terraform/{0}/terraform_{0}_SHA256SUMS"
+terraform_sums_sig_url_template = "https://releases.hashicorp.com/terraform/{0}/terraform_{0}_SHA256SUMS"
+terraform_url_template = "https://releases.hashicorp.com/terraform/{0}/terraform_{0}_{1}_{2}.zip"
+
 toolchains = {
     "terraform_linux": {
         "name": "terraform_linux",
@@ -13,6 +17,8 @@ toolchains = {
         ],
         "toolchain":":terraform_linux",
         "toolchain_type":"@io_bazel_rules_terraform//:toolchain_type",
+        "host": "linux",
+        "arch": "amd64",
         "url":"https://releases.hashicorp.com/terraform/0.11.11/terraform_0.11.11_linux_amd64.zip",
         "sha256":"t94504f4a67bad612b5c8e3a4b7ce6ca2772b3c1559630dfd71e9c519e3d6149c"
     },
@@ -28,6 +34,8 @@ toolchains = {
         ],
         "toolchain":":terraform_osx",
         "toolchain_type":"@io_bazel_rules_terraform//:toolchain_type",
+        "host": "darwin",
+        "arch": "amd64",
         "url":"https://releases.hashicorp.com/terraform/0.11.11/terraform_0.11.11_darwin_amd64.zip",
         "sha256":"6b6e8253b678554c67d717c42209fd857bfe64a1461763c05d3d1d85c6f618d3"
     }
@@ -78,15 +86,19 @@ def setup_terraform_toolchains():
 
 def _download_terraform_impl(ctx):
     if ctx.os.name == "linux":
-        host = "terraform_linux"
-        sumurl = "https://releases.hashicorp.com/terraform/{0}/terraform_{0}_SHA256SUMS".format(ctx.attr.version)
-        url = "https://releases.hashicorp.com/terraform/{0}/terraform_{0}_linux_amd64.zip".format(ctx.attr.version)
+        toolchain_name = "terraform_linux"
     elif ctx.os.name == "mac os x":
-        host = "terraform_osx"
+        toolchain_name = "terraform_osx"
     else:
         fail("Unsupported operating system: " + ctx.os.name)
 
-    toolchain = toolchains[host]
+    toolchain = toolchains[toolchain_name]
+
+    # Download The SHA256SUM File
+    # Download The SHA256SUM.sig File
+    # Verify the SHA256SUM File Signature.
+    # Extract the SHA256SUM for Terraform.
+    # Download the Terraform Executable
 
     ctx.file("BUILD.bazel",
         """
