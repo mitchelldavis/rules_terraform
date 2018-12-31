@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	checksumPathPtr := flag.String("key", "", "The path to the public key")
+	checksumPathPtr := flag.String("shasum", "", "The path to the shasum file")
 	targetPathPtr := flag.String("target", "", "The path to the file to check")
 
 	flag.Parse()
