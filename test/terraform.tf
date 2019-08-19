@@ -1,3 +1,3 @@
-#resource "tls_private_key" "example" {
-#  algorithm = "ECDSA"
-#}
+resource "tls_private_key" "example" {
+  algorithm = "ECDSA"
+}
